@@ -1,0 +1,52 @@
+import joblib
+import pandas as pd
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+# 1. Initialize the app (Like @SpringBootApplication)
+app = FastAPI(title="Credit Card Fraud API", description="XGBoost Fraud Detection Engine")
+
+# Load the trained XGBoost pipeline into memory when the server starts
+pipeline = joblib.load('ml_pipeline.joblib')
+
+# The exact schema of the Kaggle dataset
+class Transaction(BaseModel):
+    Time: float
+    V1: float
+    V2: float
+    V3: float
+    V4: float
+    V5: float
+    V6: float
+    V7: float
+    V8: float
+    V9: float
+    V10: float
+    V11: float
+    V12: float
+    V13: float
+    V14: float
+    V15: float
+    V16: float
+    V17: float
+    V18: float
+    V19: float
+    V20: float
+    V21: float
+    V22: float
+    V23: float
+    V24: float
+    V25: float
+    V26: float
+    V27: float
+    V28: float
+    Amount: float
+
+# 3. Create the Endpoint (Like @PostMapping)
+@app.post("/predict")
+def make_prediction(request: Transaction):
+    # For now, just echo the data back to prove it works
+    df = pd.DataFrame([request.model_dump()])
+    y_pred = pipeline.predict(df)
+    return {'fraud prediction' : int(y_pred[0])}
+    
